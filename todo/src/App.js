@@ -1,33 +1,35 @@
 import React, { useState, useReducer } from "react";
 import reducer, { initialState } from "./reducers/index";
-import { addTodo } from "./actions";
-import TodoForm from "./components/TodoForm";
-
+import { addTodo, toggleComplete, clearCompleted } from "./actions";
+import Todo from "./components/Todo";
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const [newTodoText, setNewTodoText] = useState("");
 
-  // const handleChanges = (e) => {
-  //   dispatch(setNewTitleText(e.target.value));
-  // };
   const handleChanges = (e) => {
     setNewTodoText(e.target.value);
   };
 
-  
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(addTodo(newTodoText));
     setNewTodoText("");
-}
-  
-  console.log(newTodoText);
+  };
+
+  const handleToggle = (itemId) => {
+    dispatch(toggleComplete(itemId));
+  };
+
+  const handleCompleted = () => {
+    dispatch(clearCompleted());
+  };
+
   return (
     <div className="App">
       <form onSubmit={handleSubmit}>
         <input
-          value={state.newTodoText}
+          value={newTodoText}
           onChange={handleChanges}
           type="text"
           name="task"
@@ -36,10 +38,12 @@ const App = () => {
         <button>Add Task</button>
       </form>
       <div className="todoList">
-        <button className="clear-btn">Clear Completed Tasks</button>
+        <button onClick={handleCompleted} className="clear-btn">
+          Clear Completed Tasks
+        </button>
         <div className="items">
           {state.map((item) => (
-            <div>{item.item}</div>
+            <Todo key={item.id} item={item} handleToggle={handleToggle} />
           ))}
         </div>
       </div>
